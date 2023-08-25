@@ -1,0 +1,93 @@
+:root {
+  font-family: sans-serif;
+}
+
+:root,
+body {
+  padding: 0px;
+  margin: 0px;
+
+  width: 100%;
+  height: 100%;
+
+  & > * {
+    position: absolute;
+  }
+}
+
+#itm-map {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+
+  & ~ * {
+    z-index: 999;
+  }
+}
+
+#itm-show-geojson-button {
+  top: 20px;
+  right: 20px;
+
+  padding: 8px;
+}
+
+#itm-geojson-form {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    display: flex;
+    flex-direction: column;
+
+    textarea {
+      white-space: nowrap;
+    }
+  }
+}
+
+.itm-cl-float {
+  background-color: transparent !important;
+  border: 0px !important;
+  box-shadow: none !important;
+  color: blue !important;
+  font-size: larger !important;
+}
+
+.itm-cmp-marker {
+  border: none;
+  background-color: transparent;
+}
+
+.itm-cmp-marker-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background-image: var(--itm-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+
+  img {
+    opacity: 0.9;
+    // flex: 1 0 auto;
+    // aspect-ratio: auto;
+  }
+}
+
+.itm-cmp-data-view {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px;
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Maps</title>
+    <link rel="stylesheet" href="bundle.css" />
+
+    <script type="module" src="bundle.js"></script>
+  </head>
+  <body>
+    <div id="itm-map"></div>
+    <button
+      id="itm-show-geojson-button"
+      class="itm-cmd-show-geojson"
+      type="button"
+    >
+      GeoJSON
+    </button>
+    <dialog id="itm-geojson-dialog">
+      <form id="itm-geojson-form" method="dialog">
+        <label>
+          <b>GeoJSON [Mockup Payload]</b>
+          <textarea name="data" cols="80" rows="20"></textarea>
+        </label>
+        <div>
+          <button type="reset">Reset</button>
+          <button type="submit">Save</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
