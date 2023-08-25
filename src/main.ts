@@ -1,7 +1,15 @@
 import './style.scss';
 import 'leaflet/dist/leaflet.css';
 
-import { divIcon, geoJSON, latLng, map, marker, tileLayer } from 'leaflet';
+import {
+  control,
+  divIcon,
+  geoJSON,
+  latLng,
+  map,
+  marker,
+  tileLayer,
+} from 'leaflet';
 import { FeatureCollection } from 'geojson';
 
 document.addEventListener('click', (ev) => {
@@ -16,13 +24,17 @@ document.addEventListener('click', (ev) => {
 
 const mymap = map('itm-map', {
   center: latLng(18.788508387847443, 98.98573391088291),
-  zoom: 16,
+  zoom: 15.5,
+  zoomSnap: 0.1,
 });
 
 tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 18,
+  minZoom: 10,
   attribution: '© OpenStreetMap',
 }).addTo(mymap);
+
+control.scale().addTo(mymap);
 
 // marker(latLng(18.788508387847443, 98.98573391088291), {
 //   icon: icon({
@@ -57,7 +69,7 @@ const data: FeatureCollection = {
       properties: {
         name: 'Hua Lin Corner',
         pointIcon:
-          'https://www.shareicon.net/data/48x48/2015/10/17/657581_character_512x512.png',
+          'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
         status: 0,
       },
       geometry: {
@@ -70,7 +82,7 @@ const data: FeatureCollection = {
       properties: {
         name: 'Si Phum Corner',
         pointIcon:
-          'https://www.shareicon.net/data/48x48/2015/11/01/665326_china_512x512.png',
+          'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
         status: 1,
         actionUrl: 'https://www.google.com',
       },
@@ -84,7 +96,7 @@ const data: FeatureCollection = {
       properties: {
         name: 'Katam Corner',
         pointIcon:
-          'https://www.shareicon.net/data/48x48/2015/10/18/658021_silhouette_512x512.png',
+          'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
         status: 2,
       },
       geometry: {
@@ -136,7 +148,7 @@ const featuresLayer = geoJSON(data, {
           class="itm-cmp-marker-content"
           style="--itm-image: url(${
             properties?.pointIcon ??
-            'https://www.shareicon.net/data/48x48/2015/12/28/694658_temple_512x512.png'
+            'https://upload.wikimedia.org/wikipedia/commons/d/db/Universit%C3%A4t.png'
           })"
         >
           <img src="${statusUrl}" alt="stauts is ${status}" />
