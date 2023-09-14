@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <base href="/interactive-maps/" />
+    <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Interactive Maps</title>
     <link rel="stylesheet" href="bundle.css" />
@@ -28,6 +28,45 @@
           <button type="reset">Reset</button>
           <button type="submit">Save</button>
         </div>
+        <p>In <code>properties</code> attribute:</p>
+        <ul>
+          <li>
+            <code>name: string</code>
+            &#8212; The name of point.
+          </li>
+          <li>
+            <code>actionUrl: string</code>
+            &#8212; The URL of playing this point.
+          </li>
+          <li>
+            <code>icon: string</code>
+            &#8212; The URL for point icon.
+          </li>
+          <li>
+            <code>iconSize: [number, number]</code>
+            &#8212; The size of icon <code>[width, height]</code>. Default is
+            <code>[64, 64]</code>.
+          </li>
+          <li>
+            <code>iconAnchor: [number, number]</code>
+            &#8212; The icon anchor position <code>[x, y]</code> from icon
+            bottom-left. Default is <code>[width / 2, height / 2]</code>.
+          </li>
+          <li>
+            <code>popupAnchor: [number, number]</code>
+            &#8212; The popup anchor position <code>[-x, -y]</code> from icon
+            anchor position. Default is <code>[0, -iconAnchor[1]]</code>.
+          </li>
+          <li>
+            <code>status: 'unvisited' | 'remote-visited' | 'visited'</code>
+            &#8212; The status of point.
+          </li>
+          <li>
+            <code>stampIcon: string</code>
+            &#8212; The URL of stamp icon. Default depends on
+            <code>status</code>.
+          </li>
+        </ul>
       </form>
     </dialog>
   </body>

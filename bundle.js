@@ -14217,7 +14217,7 @@ const data = {
             properties: {
                 name: 'Hua Lin Corner',
                 icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
-                status: 0,
+                status: 'unvisited',
             },
             geometry: {
                 type: 'Point',
@@ -14229,7 +14229,7 @@ const data = {
             properties: {
                 name: 'Si Phum Corner',
                 icon: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
-                status: 1,
+                status: 'remote-visited',
                 actionUrl: 'https://www.google.com',
             },
             geometry: {
@@ -14242,7 +14242,7 @@ const data = {
             properties: {
                 name: 'Katam Corner',
                 icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
-                status: 2,
+                status: 'visited',
             },
             geometry: {
                 type: 'Point',
@@ -14253,7 +14253,7 @@ const data = {
             type: 'Feature',
             properties: {
                 name: 'Ku Hueang Corner',
-                status: 1,
+                status: 'remote-visited',
             },
             geometry: {
                 type: 'Point',
@@ -14273,12 +14273,14 @@ const data = {
 const featuresLayer = geoJSON(data, {
     pointToLayer: (feature, pointLatLng) => {
         const { properties } = feature;
-        const status = properties?.status ?? 0;
-        const statusUrl = status === 2
-            ? 'https://leafletjs.com/examples/custom-icons/leaf-green.png'
-            : status === 1
-                ? 'https://leafletjs.com/examples/custom-icons/leaf-red.png'
-                : 'https://leafletjs.com/examples/custom-icons/leaf-orange.png';
+        const status = properties?.status ?? 'unvisited';
+        const statusUrl = typeof properties['stampIcon'] === 'string'
+            ? properties['stampIcon']
+            : status === 'visited'
+                ? 'https://leafletjs.com/examples/custom-icons/leaf-green.png'
+                : status === 'remote-visited'
+                    ? 'https://leafletjs.com/examples/custom-icons/leaf-red.png'
+                    : 'https://leafletjs.com/examples/custom-icons/leaf-orange.png';
         const iconSize = properties?.iconSize ?? [64, 64];
         const iconAnchor = properties?.iconAnchor ?? iconSize.map((value) => value / 2);
         const popupAnchor = properties?.popupAnchor ?? [
@@ -14303,7 +14305,7 @@ const featuresLayer = geoJSON(data, {
     },
     onEachFeature: (feature, layer) => {
         const { properties } = feature;
-        const status = properties?.status ?? 0;
+        const status = properties?.status ?? 'unvisited';
         const actionUrl = properties?.actionUrl;
         const actionLink = actionUrl
             ? `
