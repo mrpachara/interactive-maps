@@ -14168,6 +14168,9 @@ Map.ScrollWheelZoom = ScrollWheelZoom;
 Map.TapHold = TapHold;
 Map.TouchZoom = TouchZoom;
 
+function getZoomRation(zoomLevel) {
+    return 2 ** (zoomLevel - 15);
+}
 document.addEventListener('click', (ev) => {
     const target = ev.target;
     if (target?.matches('.itm-cmd-show-geojson')) {
@@ -14176,39 +14179,26 @@ document.addEventListener('click', (ev) => {
             ?.showModal();
     }
 });
-const mymap = createMap('itm-map', {
+const mapElement = document.querySelector('#itm-map');
+if (mapElement === null) {
+    throw new Error('Map element not found');
+}
+const mymap = createMap(mapElement, {
     center: toLatLng(18.788508387847443, 98.98573391088291),
-    zoom: 15.5,
+    zoom: 15.6,
+    zoomDelta: 0.2,
     zoomSnap: 0.1,
 });
+const adjustZoomScale = () => {
+    mapElement.style.setProperty('--itm-zoom-ratio', `${getZoomRation(mymap.getZoom())}`);
+};
+adjustZoomScale();
 tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
     minZoom: 10,
     attribution: '© OpenStreetMap',
 }).addTo(mymap);
 control.scale().addTo(mymap);
-// marker(latLng(18.788508387847443, 98.98573391088291), {
-//   icon: icon({
-//     iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
-//     //shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
-//     iconSize: [38, 95], // size of the icon
-//     //shadowSize: [50, 64], // size of the shadow
-//     iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-//     //shadowAnchor: [4, 62], // the same for the shadow
-//     popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
-//   }),
-// })
-//   .bindPopup('My Test')
-//   .bindTooltip('<b>Custom Image</b>', {
-//     permanent: true,
-//     direction: 'center',
-//     className: 'cl-float',
-//   })
-//   .addTo(mymap);
-/*
-18.795802382924858, 98.97843046568343     18.795321468827243, 98.99379737026106
-18.781613674853240, 98.97772046837895      18.781140158684252, 98.99286005344851
-*/
 const data = {
     type: 'FeatureCollection',
     features: [
@@ -14218,6 +14208,7 @@ const data = {
                 name: 'Hua Lin Corner',
                 icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
                 status: 'unvisited',
+                stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
             },
             geometry: {
                 type: 'Point',
@@ -14230,6 +14221,7 @@ const data = {
                 name: 'Si Phum Corner',
                 icon: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
                 status: 'remote-visited',
+                stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
                 actionUrl: 'https://www.google.com',
             },
             geometry: {
@@ -14243,6 +14235,7 @@ const data = {
                 name: 'Katam Corner',
                 icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
                 status: 'visited',
+                stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-green.png',
             },
             geometry: {
                 type: 'Point',
@@ -14254,6 +14247,7 @@ const data = {
             properties: {
                 name: 'Ku Hueang Corner',
                 status: 'remote-visited',
+                stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
             },
             geometry: {
                 type: 'Point',
@@ -14273,28 +14267,27 @@ const data = {
 const featuresLayer = geoJSON(data, {
     pointToLayer: (feature, pointLatLng) => {
         const { properties } = feature;
-        const status = properties?.status ?? 'unvisited';
-        const statusUrl = typeof properties['stampIcon'] === 'string'
-            ? properties['stampIcon']
-            : status === 'visited'
-                ? 'https://leafletjs.com/examples/custom-icons/leaf-green.png'
-                : status === 'remote-visited'
-                    ? 'https://leafletjs.com/examples/custom-icons/leaf-red.png'
-                    : 'https://leafletjs.com/examples/custom-icons/leaf-orange.png';
-        const iconSize = properties?.iconSize ?? [64, 64];
+        const status = properties?.['status'] ?? 'unknown';
+        const statusUrl = properties?.['stampIcon'] ?? null;
+        const zoomRatio = parseFloat(mapElement.style.getPropertyValue('--itm-zoom-ratio'));
+        const iconSize = (properties?.iconSize ?? [64, 64]).map((value) => zoomRatio * value);
+        // const iconSize: PointTuple = properties?.iconSize ?? [64, 64];
         const iconAnchor = properties?.iconAnchor ?? iconSize.map((value) => value / 2);
         const popupAnchor = properties?.popupAnchor ?? [
             0,
             -iconAnchor[1],
         ];
+        const stampElement = statusUrl
+            ? `<img src="${statusUrl}" alt="stauts is ${status}" />`
+            : '';
         return marker(pointLatLng, {
             icon: divIcon({
                 html: `<div
           class="itm-cmp-marker-content"
           style="--itm-image: url(${properties?.icon ??
-                    'https://upload.wikimedia.org/wikipedia/commons/d/db/Universit%C3%A4t.png'})"
+                    'https://upload.wikimedia.org/wikipedia/commons/d/db/Universit%C3%A4t.png'});"
         >
-          <img src="${statusUrl}" alt="stauts is ${status}" />
+          ${stampElement}
         </div>`,
                 className: 'itm-cmp-marker',
                 iconSize,
@@ -14305,7 +14298,7 @@ const featuresLayer = geoJSON(data, {
     },
     onEachFeature: (feature, layer) => {
         const { properties } = feature;
-        const status = properties?.status ?? 'unvisited';
+        const status = properties?.status ?? 'unknown';
         const actionUrl = properties?.actionUrl;
         const actionLink = actionUrl
             ? `
@@ -14326,6 +14319,13 @@ const featuresLayer = geoJSON(data, {
     `);
     },
 }).addTo(mymap);
+mymap.on('zoomend', () => {
+    console.debug(mymap.getZoom());
+    adjustZoomScale();
+    const data = featuresLayer.toGeoJSON();
+    featuresLayer.clearLayers();
+    featuresLayer.addData({ ...data });
+});
 document
     .querySelector('form#itm-geojson-form [name="data"]')
     ?.addEventListener('change', (ev) => {

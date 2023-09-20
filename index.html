@@ -54,19 +54,23 @@
           </li>
           <li>
             <code>popupAnchor: [number, number]</code>
-            &#8212; The popup anchor position <code>[-x, -y]</code> from icon
+            &#8212; The popup anchor position <code>[x, -y]</code> from icon
             anchor position. Default is <code>[0, -iconAnchor[1]]</code>.
           </li>
           <li>
-            <code>status: 'unvisited' | 'remote-visited' | 'visited'</code>
+            <code>status: string</code>
             &#8212; The status of point.
           </li>
           <li>
             <code>stampIcon: string</code>
-            &#8212; The URL of stamp icon. Default depends on
-            <code>status</code>.
+            &#8212; The URL of stamp icon.
+          </li>
+          <li>
+            <code>actionUrl: string</code>
+            &#8212; The URL for playing.
           </li>
         </ul>
+        <b>* All size is based on zoom level = 15.</b>
       </form>
     </dialog>
   </body>
