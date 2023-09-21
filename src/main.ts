@@ -2,6 +2,7 @@ import './style.scss';
 import 'leaflet/dist/leaflet.css';
 
 import {
+  PointTuple,
   control,
   divIcon,
   geoJSON,
@@ -68,8 +69,7 @@ const data: FeatureCollection = {
       type: 'Feature',
       properties: {
         name: 'Hua Lin Corner',
-        pointIcon:
-          'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
+        icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
         status: 0,
       },
       geometry: {
@@ -81,8 +81,7 @@ const data: FeatureCollection = {
       type: 'Feature',
       properties: {
         name: 'Si Phum Corner',
-        pointIcon:
-          'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
+        icon: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
         status: 1,
         actionUrl: 'https://www.google.com',
       },
@@ -95,8 +94,7 @@ const data: FeatureCollection = {
       type: 'Feature',
       properties: {
         name: 'Katam Corner',
-        pointIcon:
-          'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
+        icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
         status: 2,
       },
       geometry: {
@@ -141,22 +139,29 @@ const featuresLayer = geoJSON(data, {
         : status === 1
         ? 'https://leafletjs.com/examples/custom-icons/leaf-red.png'
         : 'https://leafletjs.com/examples/custom-icons/leaf-orange.png';
+    const iconSize: PointTuple = properties?.iconSize ?? [64, 64];
+    const iconAnchor: PointTuple =
+      properties?.iconAnchor ?? iconSize.map((value) => value / 2);
+    const popupAnchor: PointTuple = properties?.popupAnchor ?? [
+      0,
+      -iconAnchor[1],
+    ];
 
     return marker(pointLatLng, {
       icon: divIcon({
         html: `<div
           class="itm-cmp-marker-content"
           style="--itm-image: url(${
-            properties?.pointIcon ??
+            properties?.icon ??
             'https://upload.wikimedia.org/wikipedia/commons/d/db/Universit%C3%A4t.png'
           })"
         >
           <img src="${statusUrl}" alt="stauts is ${status}" />
         </div>`,
         className: 'itm-cmp-marker',
-        iconSize: [64, 64],
-        iconAnchor: [32, 32],
-        popupAnchor: [0, -32],
+        iconSize,
+        iconAnchor,
+        popupAnchor,
       }),
     });
   },
@@ -168,7 +173,7 @@ const featuresLayer = geoJSON(data, {
 
     const actionLink = actionUrl
       ? `
-      <a href="${actionUrl}">Play</a>
+      <a href="${actionUrl}" target="_blank">Play</a>
     `
       : '';
 
