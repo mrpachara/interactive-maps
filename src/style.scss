@@ -82,7 +82,8 @@ body {
   img {
     opacity: 0.9;
     // flex: 1 0 auto;
-    // aspect-ratio: auto;
+    transform: scale(var(--itm-zoom-ratio))
+      translate(var(--itm-stamp-x), var(--itm-stamp-y));
   }
 }
 
@@ -90,4 +91,11 @@ body {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 4px;
+}
+
+.itm-cmp-attributes {
+  & > dd {
+    text-align: justify;
+    margin-bottom: 8px;
+  }
 }

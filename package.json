@@ -18,7 +18,9 @@
     "typescript": "^5.1.6"
   },
   "scripts": {
-    "watch": "rollup -c --watch --no-watch.clearScreen"
+    "build": "rm -rf dist && rollup -c",
+    "watch": "rollup -c --watch --no-watch.clearScreen",
+    "deploy": "yarn run build && cp -f ./dist/index.html ./dist/404.html && npx gh-pages -d ./dist"
   },
   "dependencies": {
     "@types/geojson": "^7946.0.10",
