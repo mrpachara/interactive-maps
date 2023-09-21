@@ -74,13 +74,18 @@ body > * {
 }
 .itm-cmp-marker-content img {
   opacity: 0.9;
-  transform: scale(var(--itm-zoom-ratio));
+  transform: scale(var(--itm-zoom-ratio)) translate(var(--itm-stamp-x), var(--itm-stamp-y));
 }
 
 .itm-cmp-data-view {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 4px;
+}
+
+.itm-cmp-attributes > dd {
+  text-align: justify;
+  margin-bottom: 8px;
 }
 
 /* required styles */

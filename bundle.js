@@ -14171,6 +14171,11 @@ Map.TouchZoom = TouchZoom;
 function getZoomRation(zoomLevel) {
     return 2 ** (zoomLevel - 15);
 }
+const defaultIcon = `data:image/svg+xml;base64,${btoa(`
+<svg xmlns="http://www.w3.org/2000/svg" height="100" width="100">
+  <circle cx="50" cy="50" r="48" stroke="black" stroke-width="2" fill="red" fill-opacity="0.75" />
+</svg>
+`)}`;
 document.addEventListener('click', (ev) => {
     const target = ev.target;
     if (target?.matches('.itm-cmd-show-geojson')) {
@@ -14192,6 +14197,33 @@ const mymap = createMap(mapElement, {
 const adjustZoomScale = () => {
     mapElement.style.setProperty('--itm-zoom-ratio', `${getZoomRation(mymap.getZoom())}`);
 };
+const recenter = (data) => {
+    if (data.features.length === 0) {
+        return;
+    }
+    const bounds = data.features.reduce((results, feature) => {
+        const [lng, lat] = feature.geometry.coordinates;
+        if (lat < results[0][0]) {
+            results[0][0] = lat;
+        }
+        if (lng < results[0][1]) {
+            results[0][1] = lng;
+        }
+        if (lat > results[1][0]) {
+            results[1][0] = lat;
+        }
+        if (lng > results[1][1]) {
+            results[1][1] = lng;
+        }
+        return results;
+    }, [
+        [99999, 99999],
+        [-99999, -99999],
+    ]);
+    mymap.flyToBounds(toLatLngBounds([toLatLng(...bounds[0]), toLatLng(...bounds[1])]), {
+        padding: [64, 64],
+    });
+};
 adjustZoomScale();
 tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
@@ -14207,8 +14239,11 @@ const data = {
             properties: {
                 name: 'Hua Lin Corner',
                 icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
+                iconAnchor: [0, 0],
                 status: 'unvisited',
                 stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
+                stampIconSize: [19, 47.5],
+                stampIconAnchor: [16, -16],
             },
             geometry: {
                 type: 'Point',
@@ -14254,6 +14289,18 @@ const data = {
                 coordinates: [98.97772046837895, 18.78161367485324],
             },
         },
+        // {
+        //   type: 'Feature',
+        //   properties: {
+        //     name: 'CMU',
+        //     status: 'remote-visited',
+        //     stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
+        //   },
+        //   geometry: {
+        //     type: 'Point',
+        //     coordinates: [98.95199307655561, 18.802103324139367],
+        //   },
+        // },
     ],
 };
 (() => {
@@ -14268,24 +14315,32 @@ const featuresLayer = geoJSON(data, {
     pointToLayer: (feature, pointLatLng) => {
         const { properties } = feature;
         const status = properties?.['status'] ?? 'unknown';
-        const statusUrl = properties?.['stampIcon'] ?? null;
+        const stampIcon = properties?.['stampIcon'] ?? null;
+        const stampIconSize = properties?.['stampIconSize'] ?? null;
+        const stampIconAnchor = properties?.['stampIconAnchor'] ?? [0, 0];
         const zoomRatio = parseFloat(mapElement.style.getPropertyValue('--itm-zoom-ratio'));
-        const iconSize = (properties?.iconSize ?? [64, 64]).map((value) => zoomRatio * value);
-        // const iconSize: PointTuple = properties?.iconSize ?? [64, 64];
+        const iconSize = (properties?.iconSize ?? [32, 32]).map((value) => zoomRatio * value);
+        // const iconSize: PointTuple = properties?.iconSize ?? [32, 32];
         const iconAnchor = properties?.iconAnchor ?? iconSize.map((value) => value / 2);
         const popupAnchor = properties?.popupAnchor ?? [
             0,
             -iconAnchor[1],
         ];
-        const stampElement = statusUrl
-            ? `<img src="${statusUrl}" alt="stauts is ${status}" />`
+        const stampElement = stampIcon
+            ? `<img
+          src="${stampIcon}"
+          alt="stauts is ${status}"
+          ${stampIconSize
+                ? `width="${stampIconSize[0]}" height="${stampIconSize[1]}"`
+                : ''}
+          style="--itm-stamp-x: ${stampIconAnchor[0]}px; --itm-stamp-y: ${stampIconAnchor[1]}px;"
+        />`
             : '';
         return marker(pointLatLng, {
             icon: divIcon({
                 html: `<div
           class="itm-cmp-marker-content"
-          style="--itm-image: url(${properties?.icon ??
-                    'https://upload.wikimedia.org/wikipedia/commons/d/db/Universit%C3%A4t.png'});"
+          style="--itm-image: url('${properties?.icon ?? defaultIcon}');"
         >
           ${stampElement}
         </div>`,
@@ -14319,8 +14374,9 @@ const featuresLayer = geoJSON(data, {
     `);
     },
 }).addTo(mymap);
+recenter(data);
 mymap.on('zoomend', () => {
-    console.debug(mymap.getZoom());
+    //console.debug(mymap.getZoom());
     adjustZoomScale();
     const data = featuresLayer.toGeoJSON();
     featuresLayer.clearLayers();
@@ -14367,6 +14423,7 @@ document
             }
             featuresLayer.clearLayers();
             featuresLayer.addData(data);
+            recenter(data);
         }
     }
 });

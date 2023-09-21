@@ -28,49 +28,55 @@
           <button type="reset">Reset</button>
           <button type="submit">Save</button>
         </div>
+
         <p>In <code>properties</code> attribute:</p>
-        <ul>
-          <li>
-            <code>name: string</code>
-            &#8212; The name of point.
-          </li>
-          <li>
-            <code>actionUrl: string</code>
-            &#8212; The URL of playing this point.
-          </li>
-          <li>
-            <code>icon: string</code>
-            &#8212; The URL for point icon.
-          </li>
-          <li>
-            <code>iconSize: [number, number]</code>
-            &#8212; The size of icon <code>[width, height]</code>. Default is
-            <code>[64, 64]</code>.
-          </li>
-          <li>
-            <code>iconAnchor: [number, number]</code>
-            &#8212; The icon anchor position <code>[x, y]</code> from icon
-            bottom-left. Default is <code>[width / 2, height / 2]</code>.
-          </li>
-          <li>
-            <code>popupAnchor: [number, number]</code>
-            &#8212; The popup anchor position <code>[x, -y]</code> from icon
-            anchor position. Default is <code>[0, -iconAnchor[1]]</code>.
-          </li>
-          <li>
-            <code>status: string</code>
-            &#8212; The status of point.
-          </li>
-          <li>
-            <code>stampIcon: string</code>
-            &#8212; The URL of stamp icon.
-          </li>
-          <li>
-            <code>actionUrl: string</code>
-            &#8212; The URL for playing.
-          </li>
-        </ul>
-        <b>* All size is based on zoom level = 15.</b>
+        <dl class="itm-cmp-attributes">
+          <dt><code>name: string</code></dt>
+          <dd>The name of point.</dd>
+
+          <dt><code>status: string</code></dt>
+          <dd>The status of point.</dd>
+
+          <dt><code>actionUrl: string</code></dt>
+          <dd>The URL of playing this point.</dd>
+
+          <dt><code>icon: string</code></dt>
+          <dd>The URL for point icon.</dd>
+
+          <dt><code>iconSize: [number, number]</code></dt>
+          <dd>
+            The size of icon <code>[width, height]</code>. Default is
+            <code>[32, 32]</code>.
+          </dd>
+
+          <dt><code>iconAnchor: [number, number]</code></dt>
+          <dd>
+            The icon anchor position <code>[x, y]</code> from icon
+            <b>top-left</b>. Default is <code>[width / 2, height / 2]</code>.
+          </dd>
+
+          <dt><code>popupAnchor: [number, number]</code></dt>
+          <dd>
+            The popup anchor position <code>[x, -y]</code> from icon anchor
+            position. Default is <code>[0, -iconAnchor[1]]</code>.
+          </dd>
+
+          <dt><code>stampIcon: string</code></dt>
+          <dd>The URL of stamp icon.</dd>
+
+          <dt><code>stampIconSize: [number, number]</code></dt>
+          <dd>
+            The size of stamp icon <code>[width, height]</code>. Default is the
+            original image size.
+          </dd>
+
+          <dt><code>stampIconAnchor: [number, number]</code></dt>
+          <dd>
+            The stamp icon anchor position <code>[x, -y]</code> from the center
+            of point. Default is <code>[0, 0]</code>.
+          </dd>
+        </dl>
+        <p><b>* All size is based on zoom level = 15.</b></p>
       </form>
     </dialog>
   </body>
