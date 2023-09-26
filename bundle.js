@@ -2632,6 +2632,38 @@ function getScale(element) {
 	};
 }
 
+var DomUtil = {
+  __proto__: null,
+  TRANSFORM: TRANSFORM,
+  TRANSITION: TRANSITION,
+  TRANSITION_END: TRANSITION_END,
+  get: get,
+  getStyle: getStyle,
+  create: create$1,
+  remove: remove,
+  empty: empty,
+  toFront: toFront,
+  toBack: toBack,
+  hasClass: hasClass,
+  addClass: addClass,
+  removeClass: removeClass,
+  setClass: setClass,
+  getClass: getClass,
+  setOpacity: setOpacity,
+  testProp: testProp,
+  setTransform: setTransform,
+  setPosition: setPosition,
+  getPosition: getPosition,
+  get disableTextSelection () { return disableTextSelection; },
+  get enableTextSelection () { return enableTextSelection; },
+  disableImageDrag: disableImageDrag,
+  enableImageDrag: enableImageDrag,
+  preventOutline: preventOutline,
+  restoreOutline: restoreOutline,
+  getSizedParentNode: getSizedParentNode,
+  getScale: getScale
+};
+
 /*
  * @namespace DomEvent
  * Utility functions to work with the [DOM events](https://developer.mozilla.org/docs/Web/API/Event), used by Leaflet internally.
@@ -2932,6 +2964,23 @@ function isExternalTarget(el, e) {
 	}
 	return (related !== el);
 }
+
+var DomEvent = {
+  __proto__: null,
+  on: on,
+  off: off,
+  stopPropagation: stopPropagation,
+  disableScrollPropagation: disableScrollPropagation,
+  disableClickPropagation: disableClickPropagation,
+  preventDefault: preventDefault,
+  stop: stop,
+  getPropagationPath: getPropagationPath,
+  getMousePosition: getMousePosition,
+  getWheelDelta: getWheelDelta,
+  isExternalTarget: isExternalTarget,
+  addListener: on,
+  removeListener: off
+};
 
 /*
  * @class PosAnimation
@@ -14176,32 +14225,22 @@ const defaultIcon = `data:image/svg+xml;base64,${btoa(`
   <circle cx="50" cy="50" r="48" stroke="black" stroke-width="2" fill="red" fill-opacity="0.75" />
 </svg>
 `)}`;
-document.addEventListener('click', (ev) => {
-    const target = ev.target;
-    if (target?.matches('.itm-cmd-show-geojson')) {
-        document
-            .querySelector('dialog#itm-geojson-dialog')
-            ?.showModal();
-    }
-});
-const mapElement = document.querySelector('#itm-map');
-if (mapElement === null) {
-    throw new Error('Map element not found');
+function adjustZoomScale(itmMap) {
+    const mapElement = itmMap.getContainer();
+    mapElement.style.setProperty('--itm-zoom-ratio', `${getZoomRation(itmMap.getZoom())}`);
 }
-const mymap = createMap(mapElement, {
-    center: toLatLng(18.788508387847443, 98.98573391088291),
-    zoom: 15.6,
-    zoomDelta: 0.2,
-    zoomSnap: 0.1,
-});
-const adjustZoomScale = () => {
-    mapElement.style.setProperty('--itm-zoom-ratio', `${getZoomRation(mymap.getZoom())}`);
-};
-const recenter = (data) => {
-    if (data.features.length === 0) {
+function recenterMap(itmMap, featuresLayers) {
+    const allowedFeaturs = featuresLayers
+        .filter(([, layer]) => itmMap.hasLayer(layer))
+        .reduce((result, entry) => {
+        const layer = entry[1];
+        const featureColleciton = layer.toGeoJSON();
+        return result.concat(featureColleciton.features);
+    }, []);
+    if (allowedFeaturs.length === 0) {
         return;
     }
-    const bounds = data.features.reduce((results, feature) => {
+    const bounds = allowedFeaturs.reduce((results, feature) => {
         const [lng, lat] = feature.geometry.coordinates;
         if (lat < results[0][0]) {
             results[0][0] = lat;
@@ -14220,167 +14259,330 @@ const recenter = (data) => {
         [99999, 99999],
         [-99999, -99999],
     ]);
-    mymap.flyToBounds(toLatLngBounds([toLatLng(...bounds[0]), toLatLng(...bounds[1])]), {
+    itmMap.flyToBounds(toLatLngBounds([toLatLng(...bounds[0]), toLatLng(...bounds[1])]), {
         padding: [64, 64],
     });
+}
+function refreshFeaturesLayers(featuresLayers) {
+    featuresLayers.forEach(([, layer]) => {
+        const data = layer.toGeoJSON();
+        layer.clearLayers();
+        layer.addData({ ...data });
+    });
+}
+function initMap(itmMap, datas) {
+    adjustZoomScale(itmMap);
+    const featuresLayers = updateMapLayer(itmMap, datas);
+    return featuresLayers;
+}
+function updateMapLayer(itmMap, datas, oldFeaturesLayers) {
+    const mapElement = itmMap.getContainer();
+    if (oldFeaturesLayers) {
+        oldFeaturesLayers.forEach(([, layout]) => {
+            itmMap.removeLayer(layout);
+        });
+    }
+    const featuresLayers = Object.entries(datas).map(([name, data]) => [
+        name,
+        geoJSON(data, {
+            pointToLayer: (feature, pointLatLng) => {
+                const { properties } = feature;
+                const status = properties?.status ?? 'unknown';
+                const stampIcon = properties?.stampIcon ?? null;
+                const stampIconSize = properties?.stampIconSize ?? null;
+                const stampIconAnchor = properties?.stampIconAnchor ?? [0, 0];
+                const zoomRatio = parseFloat(mapElement.style.getPropertyValue('--itm-zoom-ratio'));
+                const iconSize = (properties?.iconSize ?? [32, 32]).map((value) => zoomRatio * value);
+                // const iconSize: PointTuple = properties?.iconSize ?? [32, 32];
+                const iconAnchor = properties?.iconAnchor ??
+                    iconSize.map((value) => value / 2);
+                const popupAnchor = properties?.popupAnchor ?? [
+                    0,
+                    -iconAnchor[1],
+                ];
+                const stampElement = stampIcon
+                    ? `<img
+                src="${stampIcon}"
+                alt="stauts is ${status}"
+                ${stampIconSize
+                        ? `width="${stampIconSize[0]}" height="${stampIconSize[1]}"`
+                        : ''}
+                style="--itm-stamp-x: ${stampIconAnchor[0]}px; --itm-stamp-y: ${stampIconAnchor[1]}px;"
+              />`
+                    : '';
+                return marker(pointLatLng, {
+                    icon: divIcon({
+                        html: `<div
+                class="itm-cmp-marker-content"
+                style="--itm-image: url('${properties?.icon ?? defaultIcon}');"
+              >
+                ${stampElement}
+              </div>`,
+                        className: 'itm-cmp-marker',
+                        iconSize,
+                        iconAnchor,
+                        popupAnchor,
+                    }),
+                });
+            },
+            onEachFeature: (feature, layer) => {
+                const { properties } = feature;
+                const status = properties?.status ?? 'unknown';
+                const actionUrl = properties?.actionUrl;
+                const actionLink = actionUrl
+                    ? `
+            <a href="${actionUrl}" target="_blank">Play</a>
+          `
+                    : '';
+                layer.bindPopup(`
+            <header>
+              <b>${properties?.name ?? 'Unknown'}</b>
+            </header>
+            <dl class="itm-cmp-data-view">
+              <dt>Status</dt>
+              <dd>${status}</dd>
+            </dl>
+            <div>
+              ${actionLink}
+            </div>
+          `);
+            },
+        }).addTo(itmMap),
+    ]);
+    let recenterMapHandler = null;
+    const recenterMapListener = () => {
+        if (recenterMapHandler !== null) {
+            clearTimeout(recenterMapHandler);
+        }
+        recenterMapHandler = setTimeout(() => {
+            recenterMap(itmMap, featuresLayers);
+        }, 100);
+    };
+    featuresLayers.forEach(([, layout]) => {
+        layout.on('add', recenterMapListener);
+        layout.on('remove', recenterMapListener);
+        layout.on('zoomend', () => refreshFeaturesLayers(featuresLayers));
+    });
+    recenterMap(itmMap, featuresLayers);
+    itmMap.removeEventListener('zoomend');
+    itmMap.on('zoomend', () => {
+        //console.debug(itmMap.getZoom());
+        adjustZoomScale(itmMap);
+        refreshFeaturesLayers(featuresLayers);
+    });
+    return featuresLayers;
+}
+
+class FullscreenControl extends Control {
+    onAdd(map) {
+        const mapElement = map.getContainer();
+        const container = DomUtil.create('div', 'leaflet-bar leaflet-control');
+        const button = DomUtil.create('a');
+        button.href = '#';
+        button.title = 'Fullscreen';
+        button.style.display = 'flex';
+        button.style.flexDirection = 'column';
+        button.style.alignItems = 'center';
+        button.style.justifyContent = 'center';
+        button.innerHTML = `
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fullscreen" viewBox="0 0 16 16">
+  <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/>
+</svg>
+`;
+        container.append(button);
+        DomEvent.on(button, 'click', DomEvent.stop).on(button, 'click', () => {
+            if (!document.fullscreenElement) {
+                mapElement.requestFullscreen();
+            }
+            else {
+                document.exitFullscreen();
+            }
+        });
+        return container;
+    }
+}
+
+class GeoJsonControl extends Control {
+    onAdd() {
+        const button = DomUtil.create('button', 'itm-cmd-show-geojson');
+        button.type = 'button';
+        button.textContent = 'GeoJSON';
+        return button;
+    }
+}
+const datas = {
+    'App 1': {
+        type: 'FeatureCollection',
+        features: [
+            {
+                type: 'Feature',
+                properties: {
+                    name: 'Hua Lin Corner',
+                    icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
+                    iconAnchor: [0, 0],
+                    status: 'unvisited',
+                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
+                    stampIconSize: [19, 47.5],
+                    stampIconAnchor: [16, -16],
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [98.97843046568343, 18.795802382924858],
+                },
+            },
+            {
+                type: 'Feature',
+                properties: {
+                    name: 'Si Phum Corner',
+                    icon: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
+                    status: 'remote-visited',
+                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
+                    actionUrl: 'https://www.google.com',
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [98.99379737026106, 18.795321468827243],
+                },
+            },
+            {
+                type: 'Feature',
+                properties: {
+                    name: 'Katam Corner',
+                    icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
+                    status: 'visited',
+                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-green.png',
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [98.99286005344851, 18.781140158684252],
+                },
+            },
+            {
+                type: 'Feature',
+                properties: {
+                    name: 'Ku Hueang Corner',
+                    status: 'remote-visited',
+                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [98.97772046837895, 18.78161367485324],
+                },
+            },
+        ],
+    },
+    'App 2': {
+        type: 'FeatureCollection',
+        features: [
+            {
+                type: 'Feature',
+                properties: {
+                    name: 'Test 02-01',
+                    icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
+                    iconAnchor: [0, 0],
+                    status: 'unvisited',
+                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
+                    stampIconSize: [19, 47.5],
+                    stampIconAnchor: [16, -16],
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [98.98277432618339, 18.791314587744008],
+                },
+            },
+            {
+                type: 'Feature',
+                properties: {
+                    name: 'Test 02-02',
+                    icon: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
+                    status: 'remote-visited',
+                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
+                    actionUrl: 'https://www.google.com',
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [98.98869174363047, 18.79088366351328],
+                },
+            },
+            {
+                type: 'Feature',
+                properties: {
+                    name: 'Test 02-03',
+                    icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
+                    status: 'visited',
+                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-green.png',
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [98.9851109474317, 18.788298094971786],
+                },
+            },
+        ],
+    },
+    'App 3': {
+        type: 'FeatureCollection',
+        features: [
+            {
+                type: 'Feature',
+                properties: {
+                    name: 'Test 02-01',
+                    icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
+                    iconAnchor: [0, 0],
+                    status: 'unvisited',
+                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
+                    stampIconSize: [19, 47.5],
+                    stampIconAnchor: [16, -16],
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [98.98547509619769, 18.78620088244317],
+                },
+            },
+        ],
+    },
 };
-adjustZoomScale();
+const dataElement = document.querySelector('form#itm-geojson-form [name="data"]');
+if (dataElement) {
+    const defaultValue = JSON.stringify(datas, undefined, 2);
+    dataElement.defaultValue = defaultValue;
+    dataElement.value = defaultValue;
+}
+const mapElement = document.querySelector('#itm-map');
+if (mapElement === null) {
+    throw new Error('Cannot find map host element');
+}
+const itmMap = createMap(mapElement, {
+    center: toLatLng(18.788508387847443, 98.98573391088291),
+    zoom: 15.6,
+    zoomDelta: 0.2,
+    zoomSnap: 0.1,
+});
 tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
     minZoom: 10,
     attribution: '© OpenStreetMap',
-}).addTo(mymap);
-control.scale().addTo(mymap);
-const data = {
-    type: 'FeatureCollection',
-    features: [
-        {
-            type: 'Feature',
-            properties: {
-                name: 'Hua Lin Corner',
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
-                iconAnchor: [0, 0],
-                status: 'unvisited',
-                stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
-                stampIconSize: [19, 47.5],
-                stampIconAnchor: [16, -16],
-            },
-            geometry: {
-                type: 'Point',
-                coordinates: [98.97843046568343, 18.795802382924858],
-            },
-        },
-        {
-            type: 'Feature',
-            properties: {
-                name: 'Si Phum Corner',
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
-                status: 'remote-visited',
-                stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
-                actionUrl: 'https://www.google.com',
-            },
-            geometry: {
-                type: 'Point',
-                coordinates: [98.99379737026106, 18.795321468827243],
-            },
-        },
-        {
-            type: 'Feature',
-            properties: {
-                name: 'Katam Corner',
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
-                status: 'visited',
-                stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-green.png',
-            },
-            geometry: {
-                type: 'Point',
-                coordinates: [98.99286005344851, 18.781140158684252],
-            },
-        },
-        {
-            type: 'Feature',
-            properties: {
-                name: 'Ku Hueang Corner',
-                status: 'remote-visited',
-                stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
-            },
-            geometry: {
-                type: 'Point',
-                coordinates: [98.97772046837895, 18.78161367485324],
-            },
-        },
-        // {
-        //   type: 'Feature',
-        //   properties: {
-        //     name: 'CMU',
-        //     status: 'remote-visited',
-        //     stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
-        //   },
-        //   geometry: {
-        //     type: 'Point',
-        //     coordinates: [98.95199307655561, 18.802103324139367],
-        //   },
-        // },
-    ],
-};
-(() => {
-    const dataElement = document.querySelector('form#itm-geojson-form [name="data"]');
-    if (dataElement) {
-        const defaultValue = JSON.stringify(data, undefined, 2);
-        dataElement.defaultValue = defaultValue;
-        dataElement.value = defaultValue;
+}).addTo(itmMap);
+control.scale().addTo(itmMap);
+new GeoJsonControl().addTo(itmMap);
+let featuresLayers = initMap(itmMap, datas);
+const layerControl = control
+    .layers(undefined, undefined, {
+    collapsed: false,
+})
+    .addTo(itmMap);
+new FullscreenControl({
+    position: 'topleft',
+}).addTo(itmMap);
+featuresLayers.forEach(([name, layer]) => {
+    layerControl.addOverlay(layer, name);
+});
+document.addEventListener('click', (ev) => {
+    const target = ev.target;
+    if (target?.matches('.itm-cmd-show-geojson')) {
+        document
+            .querySelector('dialog#itm-geojson-dialog')
+            ?.showModal();
     }
-})();
-const featuresLayer = geoJSON(data, {
-    pointToLayer: (feature, pointLatLng) => {
-        const { properties } = feature;
-        const status = properties?.['status'] ?? 'unknown';
-        const stampIcon = properties?.['stampIcon'] ?? null;
-        const stampIconSize = properties?.['stampIconSize'] ?? null;
-        const stampIconAnchor = properties?.['stampIconAnchor'] ?? [0, 0];
-        const zoomRatio = parseFloat(mapElement.style.getPropertyValue('--itm-zoom-ratio'));
-        const iconSize = (properties?.iconSize ?? [32, 32]).map((value) => zoomRatio * value);
-        // const iconSize: PointTuple = properties?.iconSize ?? [32, 32];
-        const iconAnchor = properties?.iconAnchor ?? iconSize.map((value) => value / 2);
-        const popupAnchor = properties?.popupAnchor ?? [
-            0,
-            -iconAnchor[1],
-        ];
-        const stampElement = stampIcon
-            ? `<img
-          src="${stampIcon}"
-          alt="stauts is ${status}"
-          ${stampIconSize
-                ? `width="${stampIconSize[0]}" height="${stampIconSize[1]}"`
-                : ''}
-          style="--itm-stamp-x: ${stampIconAnchor[0]}px; --itm-stamp-y: ${stampIconAnchor[1]}px;"
-        />`
-            : '';
-        return marker(pointLatLng, {
-            icon: divIcon({
-                html: `<div
-          class="itm-cmp-marker-content"
-          style="--itm-image: url('${properties?.icon ?? defaultIcon}');"
-        >
-          ${stampElement}
-        </div>`,
-                className: 'itm-cmp-marker',
-                iconSize,
-                iconAnchor,
-                popupAnchor,
-            }),
-        });
-    },
-    onEachFeature: (feature, layer) => {
-        const { properties } = feature;
-        const status = properties?.status ?? 'unknown';
-        const actionUrl = properties?.actionUrl;
-        const actionLink = actionUrl
-            ? `
-      <a href="${actionUrl}" target="_blank">Play</a>
-    `
-            : '';
-        layer.bindPopup(`
-      <header>
-        <b>${properties?.name ?? 'Unknown'}</b>
-      </header>
-      <dl class="itm-cmp-data-view">
-        <dt>Status</dt>
-        <dd>${status}</dd>
-      </dl>
-      <div>
-        ${actionLink}
-      </div>
-    `);
-    },
-}).addTo(mymap);
-recenter(data);
-mymap.on('zoomend', () => {
-    //console.debug(mymap.getZoom());
-    adjustZoomScale();
-    const data = featuresLayer.toGeoJSON();
-    featuresLayer.clearLayers();
-    featuresLayer.addData({ ...data });
 });
 document
     .querySelector('form#itm-geojson-form [name="data"]')
@@ -14421,9 +14623,15 @@ document
                 dataElement.defaultValue = defaultValue;
                 dataElement.value = defaultValue;
             }
-            featuresLayer.clearLayers();
-            featuresLayer.addData(data);
-            recenter(data);
+            featuresLayers.forEach(([, layer]) => {
+                layerControl.removeLayer(layer);
+            });
+            featuresLayers = updateMapLayer(itmMap, data, featuresLayers);
+            featuresLayers.forEach(([name, layer]) => {
+                layerControl.addOverlay(layer, name);
+            });
+            // refreshFeaturesLayers(featuresLayers);
+            // recenterMap(itmMap, featuresLayers);
         }
     }
 });
