@@ -31,4 +31,16 @@ export class FullscreenControl extends Control {
 
     return container;
   }
+
+  onRemove(): void {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+
+    [...(this.getContainer()?.querySelectorAll('button') || [])].forEach(
+      (button) => {
+        DomEvent.off(button);
+      },
+    );
+  }
 }
