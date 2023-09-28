@@ -3110,7 +3110,7 @@ var PosAnimation = Evented.extend({
  *
  */
 
-var Map = Evented.extend({
+var Map$1 = Evented.extend({
 
 	options: {
 		// @section Map State Options
@@ -4828,7 +4828,7 @@ var Map = Evented.extend({
 // Instantiates a map object given an instance of a `<div>` HTML element
 // and optionally an object literal with `Map options`.
 function createMap(id, options) {
-	return new Map(id, options);
+	return new Map$1(id, options);
 }
 
 /*
@@ -4957,7 +4957,7 @@ var control = function (options) {
 /* @namespace Map
  * @section Methods for Layers and Controls
  */
-Map.include({
+Map$1.include({
 	// @method addControl(control: Control): this
 	// Adds the given control to the map
 	addControl: function (control) {
@@ -5557,11 +5557,11 @@ var Zoom = Control.extend({
 // @section Control options
 // @option zoomControl: Boolean = true
 // Whether a [zoom control](#control-zoom) is added to the map by default.
-Map.mergeOptions({
+Map$1.mergeOptions({
 	zoomControl: true
 });
 
-Map.addInitHook(function () {
+Map$1.addInitHook(function () {
 	if (this.options.zoomControl) {
 		// @section Controls
 		// @property zoomControl: Control.Zoom
@@ -5832,11 +5832,11 @@ var Attribution = Control.extend({
 // @section Control options
 // @option attributionControl: Boolean = true
 // Whether a [attribution control](#control-attribution) is added to the map by default.
-Map.mergeOptions({
+Map$1.mergeOptions({
 	attributionControl: true
 });
 
-Map.addInitHook(function () {
+Map$1.addInitHook(function () {
 	if (this.options.attributionControl) {
 		new Attribution().addTo(this);
 	}
@@ -6843,7 +6843,7 @@ var Layer = Evented.extend({
  *
  * @section Methods for Layers and Controls
  */
-Map.include({
+Map$1.include({
 	// @method addLayer(layer: Layer): this
 	// Adds the given layer to the map
 	addLayer: function (layer) {
@@ -9901,7 +9901,7 @@ var DivOverlay = Layer.extend({
 
 });
 
-Map.include({
+Map$1.include({
 	_initOverlay: function (OverlayClass, content, latlng, options) {
 		var overlay = content;
 		if (!(overlay instanceof OverlayClass)) {
@@ -10246,14 +10246,14 @@ var Popup = DivOverlay.extend({
  * @option closePopupOnClick: Boolean = true
  * Set it to `false` if you don't want popups to close when user clicks the map.
  */
-Map.mergeOptions({
+Map$1.mergeOptions({
 	closePopupOnClick: true
 });
 
 
 // @namespace Map
 // @section Methods for Layers and Controls
-Map.include({
+Map$1.include({
 	// @method openPopup(popup: Popup): this
 	// Opens the specified popup while closing the previously opened (to make sure only one is opened at one time for usability).
 	// @alternative
@@ -10629,7 +10629,7 @@ var Tooltip = DivOverlay.extend({
 
 // @namespace Map
 // @section Methods for Layers and Controls
-Map.include({
+Map$1.include({
 
 	// @method openTooltip(tooltip: Tooltip): this
 	// Opens the specified tooltip.
@@ -13196,7 +13196,7 @@ function svg(options) {
 	return Browser.svg || Browser.vml ? new SVG(options) : null;
 }
 
-Map.include({
+Map$1.include({
 	// @namespace Map; @method getRenderer(layer: Path): Renderer
 	// Returns the instance of `Renderer` that should be used to render the given
 	// `Path`. It will ensure that the `renderer` options of the map and paths
@@ -13305,7 +13305,7 @@ GeoJSON.asFeature = asFeature;
 
 // @namespace Map
 // @section Interaction Options
-Map.mergeOptions({
+Map$1.mergeOptions({
 	// @option boxZoom: Boolean = true
 	// Whether the map can be zoomed to a rectangular area specified by
 	// dragging the mouse while pressing the shift key.
@@ -13441,7 +13441,7 @@ var BoxZoom = Handler.extend({
 // @section Handlers
 // @property boxZoom: Handler
 // Box (shift-drag with mouse) zoom handler.
-Map.addInitHook('addHandler', 'boxZoom', BoxZoom);
+Map$1.addInitHook('addHandler', 'boxZoom', BoxZoom);
 
 /*
  * L.Handler.DoubleClickZoom is used to handle double-click zoom on the map, enabled by default.
@@ -13450,7 +13450,7 @@ Map.addInitHook('addHandler', 'boxZoom', BoxZoom);
 // @namespace Map
 // @section Interaction Options
 
-Map.mergeOptions({
+Map$1.mergeOptions({
 	// @option doubleClickZoom: Boolean|String = true
 	// Whether the map can be zoomed in by double clicking on it and
 	// zoomed out by double clicking while holding shift. If passed
@@ -13494,7 +13494,7 @@ var DoubleClickZoom = Handler.extend({
 //
 // @property doubleClickZoom: Handler
 // Double click zoom handler.
-Map.addInitHook('addHandler', 'doubleClickZoom', DoubleClickZoom);
+Map$1.addInitHook('addHandler', 'doubleClickZoom', DoubleClickZoom);
 
 /*
  * L.Handler.MapDrag is used to make the map draggable (with panning inertia), enabled by default.
@@ -13502,7 +13502,7 @@ Map.addInitHook('addHandler', 'doubleClickZoom', DoubleClickZoom);
 
 // @namespace Map
 // @section Interaction Options
-Map.mergeOptions({
+Map$1.mergeOptions({
 	// @option dragging: Boolean = true
 	// Whether the map is draggable with mouse/touch or not.
 	dragging: true,
@@ -13722,7 +13722,7 @@ var Drag = Handler.extend({
 // @section Handlers
 // @property dragging: Handler
 // Map dragging handler (by both mouse and touch).
-Map.addInitHook('addHandler', 'dragging', Drag);
+Map$1.addInitHook('addHandler', 'dragging', Drag);
 
 /*
  * L.Map.Keyboard is handling keyboard interaction with the map, enabled by default.
@@ -13730,7 +13730,7 @@ Map.addInitHook('addHandler', 'dragging', Drag);
 
 // @namespace Map
 // @section Keyboard Navigation Options
-Map.mergeOptions({
+Map$1.mergeOptions({
 	// @option keyboard: Boolean = true
 	// Makes the map focusable and allows users to navigate the map with keyboard
 	// arrows and `+`/`-` keys.
@@ -13900,7 +13900,7 @@ var Keyboard = Handler.extend({
 // @section Handlers
 // @property keyboard: Handler
 // Keyboard navigation handler.
-Map.addInitHook('addHandler', 'keyboard', Keyboard);
+Map$1.addInitHook('addHandler', 'keyboard', Keyboard);
 
 /*
  * L.Handler.ScrollWheelZoom is used by L.Map to enable mouse scroll wheel zoom on the map.
@@ -13908,7 +13908,7 @@ Map.addInitHook('addHandler', 'keyboard', Keyboard);
 
 // @namespace Map
 // @section Interaction Options
-Map.mergeOptions({
+Map$1.mergeOptions({
 	// @section Mouse wheel options
 	// @option scrollWheelZoom: Boolean|String = true
 	// Whether the map can be zoomed by using the mouse wheel. If passed `'center'`,
@@ -13987,7 +13987,7 @@ var ScrollWheelZoom = Handler.extend({
 // @section Handlers
 // @property scrollWheelZoom: Handler
 // Scroll wheel zoom handler.
-Map.addInitHook('addHandler', 'scrollWheelZoom', ScrollWheelZoom);
+Map$1.addInitHook('addHandler', 'scrollWheelZoom', ScrollWheelZoom);
 
 /*
  * L.Map.TapHold is used to simulate `contextmenu` event on long hold,
@@ -13998,7 +13998,7 @@ var tapHoldDelay = 600;
 
 // @namespace Map
 // @section Interaction Options
-Map.mergeOptions({
+Map$1.mergeOptions({
 	// @section Touch interaction options
 	// @option tapHold: Boolean
 	// Enables simulation of `contextmenu` event, default is `true` for mobile Safari.
@@ -14083,7 +14083,7 @@ var TapHold = Handler.extend({
 // @section Handlers
 // @property tapHold: Handler
 // Long tap handler to simulate `contextmenu` event (useful in mobile Safari).
-Map.addInitHook('addHandler', 'tapHold', TapHold);
+Map$1.addInitHook('addHandler', 'tapHold', TapHold);
 
 /*
  * L.Handler.TouchZoom is used by L.Map to add pinch zoom on supported mobile browsers.
@@ -14091,7 +14091,7 @@ Map.addInitHook('addHandler', 'tapHold', TapHold);
 
 // @namespace Map
 // @section Interaction Options
-Map.mergeOptions({
+Map$1.mergeOptions({
 	// @section Touch interaction options
 	// @option touchZoom: Boolean|String = *
 	// Whether the map can be zoomed by touch-dragging with two fingers. If
@@ -14207,31 +14207,119 @@ var TouchZoom = Handler.extend({
 // @section Handlers
 // @property touchZoom: Handler
 // Touch zoom handler.
-Map.addInitHook('addHandler', 'touchZoom', TouchZoom);
+Map$1.addInitHook('addHandler', 'touchZoom', TouchZoom);
 
-Map.BoxZoom = BoxZoom;
-Map.DoubleClickZoom = DoubleClickZoom;
-Map.Drag = Drag;
-Map.Keyboard = Keyboard;
-Map.ScrollWheelZoom = ScrollWheelZoom;
-Map.TapHold = TapHold;
-Map.TouchZoom = TouchZoom;
+Map$1.BoxZoom = BoxZoom;
+Map$1.DoubleClickZoom = DoubleClickZoom;
+Map$1.Drag = Drag;
+Map$1.Keyboard = Keyboard;
+Map$1.ScrollWheelZoom = ScrollWheelZoom;
+Map$1.TapHold = TapHold;
+Map$1.TouchZoom = TouchZoom;
 
-function getZoomRation(zoomLevel) {
-    return 2 ** (zoomLevel - 15);
-}
+const BASE_ZOOM = 15;
+const defaultIconSize = [32, 32];
 const defaultIcon = `data:image/svg+xml;base64,${btoa(`
 <svg xmlns="http://www.w3.org/2000/svg" height="100" width="100">
   <circle cx="50" cy="50" r="48" stroke="black" stroke-width="2" fill="red" fill-opacity="0.75" />
 </svg>
 `)}`;
-function adjustZoomScale(itmMap) {
-    const mapElement = itmMap.getContainer();
-    mapElement.style.setProperty('--itm-zoom-ratio', `${getZoomRation(itmMap.getZoom())}`);
+const featuresLayoutsMap = new Map();
+function getZoomRation(zoomLevel) {
+    return 2 ** (zoomLevel - BASE_ZOOM);
 }
-function recenterMap(itmMap, featuresLayers) {
+function adjustZoomScale(flMap) {
+    const mapElement = flMap.getContainer();
+    mapElement.style.setProperty('--fl-zoom-ratio', `${getZoomRation(flMap.getZoom())}`);
+}
+function createFeaturesLayers(flMap, datas) {
+    const mapElement = flMap.getContainer();
+    const featuresLayers = Object.entries(datas).map(([name, data]) => [
+        name,
+        geoJSON(data, {
+            pointToLayer: (feature, pointLatLng) => {
+                const { properties } = feature;
+                const status = properties?.status ?? 'unknown';
+                const stampIcon = properties?.stampIcon ?? null;
+                const stampIconSize = properties?.stampIconSize ?? null;
+                const stampIconAnchor = properties?.stampIconAnchor ?? [0, 0];
+                const zoomRatio = parseFloat(mapElement.style.getPropertyValue('--fl-zoom-ratio'));
+                const iconSize = (properties?.iconSize ?? defaultIconSize).map((value) => zoomRatio * value);
+                const iconAnchor = properties?.iconAnchor ??
+                    iconSize.map((value) => value / 2);
+                const popupAnchor = properties?.popupAnchor ?? [
+                    0,
+                    -iconAnchor[1],
+                ];
+                const stampElement = stampIcon
+                    ? `<img
+                src="${stampIcon}"
+                alt="stauts is ${status}"
+                ${stampIconSize
+                        ? `width="${stampIconSize[0]}" height="${stampIconSize[1]}"`
+                        : ''}
+                style="--fl-stamp-x: ${stampIconAnchor[0]}px; --fl-stamp-y: ${stampIconAnchor[1]}px;"
+              />`
+                    : '';
+                return marker(pointLatLng, {
+                    icon: divIcon({
+                        html: `<div
+                class="fl-cmp-marker-content"
+                style="--fl-image: url('${properties?.icon ?? defaultIcon}');"
+              >
+                ${stampElement}
+              </div>`,
+                        className: 'fl-cmp-marker',
+                        iconSize,
+                        iconAnchor,
+                        popupAnchor,
+                    }),
+                });
+            },
+            onEachFeature: (feature, layer) => {
+                const { properties } = feature;
+                const status = properties?.status ?? 'unknown';
+                const actionUrl = properties?.actionUrl;
+                const actionLink = actionUrl
+                    ? `
+            <a href="${actionUrl}" target="_blank">Play</a>
+          `
+                    : '';
+                layer.bindPopup(`
+            <header>
+              <b>${properties?.name ?? 'Unknown'}</b>
+            </header>
+            <dl class="fl-cmp-data-view">
+              <dt>Status</dt>
+              <dd>${status}</dd>
+            </dl>
+            <div>
+              ${actionLink}
+            </div>
+          `);
+            },
+        }).addTo(flMap),
+    ]);
+    let recenterMapHandler = null;
+    const recenterMapListener = () => {
+        if (recenterMapHandler !== null) {
+            clearTimeout(recenterMapHandler);
+        }
+        recenterMapHandler = setTimeout(() => {
+            recenterMap(flMap, featuresLayers);
+        }, 100);
+    };
+    featuresLayers.forEach(([, layout]) => {
+        layout.on('add', recenterMapListener);
+        layout.on('remove', recenterMapListener);
+        layout.on('zoomend', () => refreshFeaturesLayers(featuresLayers));
+    });
+    recenterMap(flMap, featuresLayers);
+    return featuresLayers;
+}
+function recenterMap(flMap, featuresLayers) {
     const allowedFeaturs = featuresLayers
-        .filter(([, layer]) => itmMap.hasLayer(layer))
+        .filter(([, layer]) => flMap.hasLayer(layer))
         .reduce((result, entry) => {
         const layer = entry[1];
         const featureColleciton = layer.toGeoJSON();
@@ -14256,10 +14344,10 @@ function recenterMap(itmMap, featuresLayers) {
         }
         return results;
     }, [
-        [99999, 99999],
-        [-99999, -99999],
+        [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY],
+        [Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY],
     ]);
-    itmMap.flyToBounds(toLatLngBounds([toLatLng(...bounds[0]), toLatLng(...bounds[1])]), {
+    flMap.flyToBounds(toLatLngBounds([toLatLng(...bounds[0]), toLatLng(...bounds[1])]), {
         padding: [64, 64],
     });
 }
@@ -14270,107 +14358,27 @@ function refreshFeaturesLayers(featuresLayers) {
         layer.addData({ ...data });
     });
 }
-function initMap(itmMap, datas) {
-    adjustZoomScale(itmMap);
-    const featuresLayers = updateMapLayer(itmMap, datas);
-    return featuresLayers;
-}
-function updateMapLayer(itmMap, datas, oldFeaturesLayers) {
-    const mapElement = itmMap.getContainer();
+function updateFeaturesLayers(flMap, datas) {
+    const oldFeaturesLayers = featuresLayoutsMap.get(flMap);
     if (oldFeaturesLayers) {
         oldFeaturesLayers.forEach(([, layout]) => {
-            itmMap.removeLayer(layout);
+            flMap.removeLayer(layout);
         });
     }
-    const featuresLayers = Object.entries(datas).map(([name, data]) => [
-        name,
-        geoJSON(data, {
-            pointToLayer: (feature, pointLatLng) => {
-                const { properties } = feature;
-                const status = properties?.status ?? 'unknown';
-                const stampIcon = properties?.stampIcon ?? null;
-                const stampIconSize = properties?.stampIconSize ?? null;
-                const stampIconAnchor = properties?.stampIconAnchor ?? [0, 0];
-                const zoomRatio = parseFloat(mapElement.style.getPropertyValue('--itm-zoom-ratio'));
-                const iconSize = (properties?.iconSize ?? [32, 32]).map((value) => zoomRatio * value);
-                // const iconSize: PointTuple = properties?.iconSize ?? [32, 32];
-                const iconAnchor = properties?.iconAnchor ??
-                    iconSize.map((value) => value / 2);
-                const popupAnchor = properties?.popupAnchor ?? [
-                    0,
-                    -iconAnchor[1],
-                ];
-                const stampElement = stampIcon
-                    ? `<img
-                src="${stampIcon}"
-                alt="stauts is ${status}"
-                ${stampIconSize
-                        ? `width="${stampIconSize[0]}" height="${stampIconSize[1]}"`
-                        : ''}
-                style="--itm-stamp-x: ${stampIconAnchor[0]}px; --itm-stamp-y: ${stampIconAnchor[1]}px;"
-              />`
-                    : '';
-                return marker(pointLatLng, {
-                    icon: divIcon({
-                        html: `<div
-                class="itm-cmp-marker-content"
-                style="--itm-image: url('${properties?.icon ?? defaultIcon}');"
-              >
-                ${stampElement}
-              </div>`,
-                        className: 'itm-cmp-marker',
-                        iconSize,
-                        iconAnchor,
-                        popupAnchor,
-                    }),
-                });
-            },
-            onEachFeature: (feature, layer) => {
-                const { properties } = feature;
-                const status = properties?.status ?? 'unknown';
-                const actionUrl = properties?.actionUrl;
-                const actionLink = actionUrl
-                    ? `
-            <a href="${actionUrl}" target="_blank">Play</a>
-          `
-                    : '';
-                layer.bindPopup(`
-            <header>
-              <b>${properties?.name ?? 'Unknown'}</b>
-            </header>
-            <dl class="itm-cmp-data-view">
-              <dt>Status</dt>
-              <dd>${status}</dd>
-            </dl>
-            <div>
-              ${actionLink}
-            </div>
-          `);
-            },
-        }).addTo(itmMap),
-    ]);
-    let recenterMapHandler = null;
-    const recenterMapListener = () => {
-        if (recenterMapHandler !== null) {
-            clearTimeout(recenterMapHandler);
-        }
-        recenterMapHandler = setTimeout(() => {
-            recenterMap(itmMap, featuresLayers);
-        }, 100);
-    };
-    featuresLayers.forEach(([, layout]) => {
-        layout.on('add', recenterMapListener);
-        layout.on('remove', recenterMapListener);
-        layout.on('zoomend', () => refreshFeaturesLayers(featuresLayers));
-    });
-    recenterMap(itmMap, featuresLayers);
-    itmMap.removeEventListener('zoomend');
-    itmMap.on('zoomend', () => {
-        //console.debug(itmMap.getZoom());
-        adjustZoomScale(itmMap);
-        refreshFeaturesLayers(featuresLayers);
-    });
-    return featuresLayers;
+    else {
+        adjustZoomScale(flMap);
+        flMap.on('zoomend', () => {
+            //console.debug(flMap.getZoom());
+            adjustZoomScale(flMap);
+            const featuresLayers = featuresLayoutsMap.get(flMap);
+            if (featuresLayers) {
+                refreshFeaturesLayers(featuresLayers);
+            }
+        });
+    }
+    const newFeaturesLayers = createFeaturesLayers(flMap, datas);
+    featuresLayoutsMap.set(flMap, newFeaturesLayers);
+    return newFeaturesLayers;
 }
 
 class FullscreenControl extends Control {
@@ -14400,6 +14408,74 @@ class FullscreenControl extends Control {
         });
         return container;
     }
+    onRemove() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
+        [...(this.getContainer()?.querySelectorAll('button') || [])].forEach((button) => {
+            DomEvent.off(button);
+        });
+    }
+}
+
+async function getCurrentLocation(options) {
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition((pos) => resolve(pos), (err) => reject(err), options);
+    });
+}
+
+const defaultCenter = toLatLng(18.788508387847443, 98.98573391088291);
+const defaultZoom = 15.6;
+const defaultZoomDelta = 0.2;
+const defaultZoomSnap = 0.1;
+const stateMap = new Map();
+async function createSimpleMap(mapElement, datas, initialControls) {
+    const center = await getCurrentLocation()
+        .then((pos) => toLatLng(pos.coords.latitude, pos.coords.longitude))
+        .catch(() => defaultCenter);
+    const leftLetMap = createMap(mapElement, {
+        center: center,
+        zoom: defaultZoom,
+        zoomDelta: defaultZoomDelta,
+        zoomSnap: defaultZoomSnap,
+    });
+    tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        minZoom: 10,
+        attribution: '© OpenStreetMap',
+    }).addTo(leftLetMap);
+    (initialControls ?? []).forEach((control) => leftLetMap.addControl(control));
+    control.scale().addTo(leftLetMap);
+    const featuresLayers = updateFeaturesLayers(leftLetMap, datas);
+    const layersControl = control
+        .layers(undefined, undefined, {
+        collapsed: false,
+    })
+        .addTo(leftLetMap);
+    new FullscreenControl({
+        position: 'topleft',
+    }).addTo(leftLetMap);
+    featuresLayers.forEach(([name, layer]) => {
+        layersControl.addOverlay(layer, name);
+    });
+    stateMap.set(leftLetMap, {
+        featuresLayers,
+        layersControl,
+    });
+    return leftLetMap;
+}
+function updateSimpleMap(leftLetMap, datas) {
+    const stateData = stateMap.get(leftLetMap);
+    if (typeof stateData === 'undefined') {
+        throw new Error('The map is not initialized yet');
+    }
+    stateData.featuresLayers.forEach(([, layer]) => {
+        stateData.layersControl.removeLayer(layer);
+    });
+    stateData.featuresLayers = updateFeaturesLayers(leftLetMap, datas);
+    stateData.featuresLayers.forEach(([name, layer]) => {
+        stateData.layersControl.addOverlay(layer, name);
+    });
 }
 
 class GeoJsonControl extends Control {
@@ -14410,137 +14486,11 @@ class GeoJsonControl extends Control {
         return button;
     }
 }
-const datas = {
-    'App 1': {
-        type: 'FeatureCollection',
-        features: [
-            {
-                type: 'Feature',
-                properties: {
-                    name: 'Hua Lin Corner',
-                    icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
-                    iconAnchor: [0, 0],
-                    status: 'unvisited',
-                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
-                    stampIconSize: [19, 47.5],
-                    stampIconAnchor: [16, -16],
-                },
-                geometry: {
-                    type: 'Point',
-                    coordinates: [98.97843046568343, 18.795802382924858],
-                },
-            },
-            {
-                type: 'Feature',
-                properties: {
-                    name: 'Si Phum Corner',
-                    icon: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
-                    status: 'remote-visited',
-                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
-                    actionUrl: 'https://www.google.com',
-                },
-                geometry: {
-                    type: 'Point',
-                    coordinates: [98.99379737026106, 18.795321468827243],
-                },
-            },
-            {
-                type: 'Feature',
-                properties: {
-                    name: 'Katam Corner',
-                    icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
-                    status: 'visited',
-                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-green.png',
-                },
-                geometry: {
-                    type: 'Point',
-                    coordinates: [98.99286005344851, 18.781140158684252],
-                },
-            },
-            {
-                type: 'Feature',
-                properties: {
-                    name: 'Ku Hueang Corner',
-                    status: 'remote-visited',
-                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
-                },
-                geometry: {
-                    type: 'Point',
-                    coordinates: [98.97772046837895, 18.78161367485324],
-                },
-            },
-        ],
-    },
-    'App 2': {
-        type: 'FeatureCollection',
-        features: [
-            {
-                type: 'Feature',
-                properties: {
-                    name: 'Test 02-01',
-                    icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
-                    iconAnchor: [0, 0],
-                    status: 'unvisited',
-                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
-                    stampIconSize: [19, 47.5],
-                    stampIconAnchor: [16, -16],
-                },
-                geometry: {
-                    type: 'Point',
-                    coordinates: [98.98277432618339, 18.791314587744008],
-                },
-            },
-            {
-                type: 'Feature',
-                properties: {
-                    name: 'Test 02-02',
-                    icon: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Bibliothek1.png',
-                    status: 'remote-visited',
-                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
-                    actionUrl: 'https://www.google.com',
-                },
-                geometry: {
-                    type: 'Point',
-                    coordinates: [98.98869174363047, 18.79088366351328],
-                },
-            },
-            {
-                type: 'Feature',
-                properties: {
-                    name: 'Test 02-03',
-                    icon: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Bibliotheksnutzung1.png',
-                    status: 'visited',
-                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-green.png',
-                },
-                geometry: {
-                    type: 'Point',
-                    coordinates: [98.9851109474317, 18.788298094971786],
-                },
-            },
-        ],
-    },
-    'App 3': {
-        type: 'FeatureCollection',
-        features: [
-            {
-                type: 'Feature',
-                properties: {
-                    name: 'Test 02-01',
-                    icon: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Bibliothekar_d2.png',
-                    iconAnchor: [0, 0],
-                    status: 'unvisited',
-                    stampIcon: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png',
-                    stampIconSize: [19, 47.5],
-                    stampIconAnchor: [16, -16],
-                },
-                geometry: {
-                    type: 'Point',
-                    coordinates: [98.98547509619769, 18.78620088244317],
-                },
-            },
-        ],
-    },
-};
+const datas = JSON.parse(document.querySelector('#itm-map-data')?.textContent ||
+    'null');
+if (datas === null) {
+    throw new Error('Cannot find features data');
+}
 const dataElement = document.querySelector('form#itm-geojson-form [name="data"]');
 if (dataElement) {
     const defaultValue = JSON.stringify(datas, undefined, 2);
@@ -14551,31 +14501,7 @@ const mapElement = document.querySelector('#itm-map');
 if (mapElement === null) {
     throw new Error('Cannot find map host element');
 }
-const itmMap = createMap(mapElement, {
-    center: toLatLng(18.788508387847443, 98.98573391088291),
-    zoom: 15.6,
-    zoomDelta: 0.2,
-    zoomSnap: 0.1,
-});
-tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    minZoom: 10,
-    attribution: '© OpenStreetMap',
-}).addTo(itmMap);
-control.scale().addTo(itmMap);
-new GeoJsonControl().addTo(itmMap);
-let featuresLayers = initMap(itmMap, datas);
-const layerControl = control
-    .layers(undefined, undefined, {
-    collapsed: false,
-})
-    .addTo(itmMap);
-new FullscreenControl({
-    position: 'topleft',
-}).addTo(itmMap);
-featuresLayers.forEach(([name, layer]) => {
-    layerControl.addOverlay(layer, name);
-});
+const itmMap = await createSimpleMap(mapElement, datas, [new GeoJsonControl()]);
 document.addEventListener('click', (ev) => {
     const target = ev.target;
     if (target?.matches('.itm-cmd-show-geojson')) {
@@ -14616,22 +14542,14 @@ document
         const formData = new FormData(target);
         const dataText = formData.get('data');
         if (typeof dataText === 'string') {
-            const data = JSON.parse(dataText);
+            const datas = JSON.parse(dataText);
             const dataElement = target.querySelector('[name="data"]');
             if (dataElement) {
-                const defaultValue = JSON.stringify(data, undefined, 2);
+                const defaultValue = JSON.stringify(datas, undefined, 2);
                 dataElement.defaultValue = defaultValue;
                 dataElement.value = defaultValue;
             }
-            featuresLayers.forEach(([, layer]) => {
-                layerControl.removeLayer(layer);
-            });
-            featuresLayers = updateMapLayer(itmMap, data, featuresLayers);
-            featuresLayers.forEach(([name, layer]) => {
-                layerControl.addOverlay(layer, name);
-            });
-            // refreshFeaturesLayers(featuresLayers);
-            // recenterMap(itmMap, featuresLayers);
+            updateSimpleMap(itmMap, datas);
         }
     }
 });
